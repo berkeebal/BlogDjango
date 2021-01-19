@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title_tag }}{% endblock %}
+
+{% block content %}
+    <div class="card my-5 border-0" style="width: 100%;">
+        <h1> {{ post.title.title }}</h1>
+        <p> {{ post.author.first_name.capitalize }} {{ post.author.last_name.capitalize }}
+            Easy {{ post.create_date }}
+            {% if user.is_authenticated %}
+                {% if user.id == post.author.id %}
+                    <a class="ml-auto" href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                    <a class="ml-auto" href="{% url 'delete-post' post.pk %}"><small
+                            style="color: #ff0000">(Delete)</small></a>
+                {% endif %}
+            {% endif %}
+        </p>
+        {% if post.image != None %}
+            <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+        {% endif %}
+        <div class="card-body">
+            {% if user.is_authenticated %}
+                {% if user.id != post.author.id %}
+                    <form action="{% url 'like-post' post.pk %}" method="Post">
+                        {% csrf_token %}
+                        <button class="btn btn-success btn-lg" type="submit" name="post_id" value="{{ post.id }}">
+                            Like({{ post.likes.count }})
+                        </button>
+                    </form>
+                {% else %}
+                    <button class="btn btn-success btn-lg" disabled> Likes - {{ post.likes.count }}</button>
+                {% endif %}
+            {% endif %}
+            <h5 class="card-title my-3">Description</h5>
+            <div class="clearfix">
+                <ul>
+                    {% for ing in post.ingredients.all %}
+                        <li> {{ ing.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <p class="card-text" style="text-indent: 10%;">{{ post.body.capitalize| safe |linebreaks }}</p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{%  extends 'base.html' %}
+
+{% block title %}Delete Blog Post{% endblock %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+        {% if user.id == post.author.id %}
+            <h1>Delete Post</h1>
+            <h3>Delete {{ post.title }}</h3>
+            <div content="form-group">
+                <form method="Post">
+                <br><br>
+                {% csrf_token %}
+                 <strong>Are you sure?</strong><br><br>
+                <button class="btn btn-secondary">Delete Post</button>
+            </form>
+            </div>
+            {% else %}
+                 <!-- Authentication (404) Error -->
+                <br><br><br>
+                <div style="width: 50%; height: 40vh; background: #333; color: white;margin-right: auto;margin-left: auto; border-radius: 10px; font-size: 2rem; position: relative">
+                    <p style=" text-align: center; width: 100%; display: block; padding: 1.5rem 0; position: absolute;top: 50%; left: 50%; transform: translate(-50%, -50%); background: goldenrod;">
+                        You are not authenticated
+                    </p>
+                </div>
+            {% endif %}
+    {% endif %}
+{% endblock %}

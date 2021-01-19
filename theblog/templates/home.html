@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+    <h1 class="mb-5">Recipes</h1>
+    <hr><br>
+    <div class="row">
+        <div class="col-sm-8">
+            {% for post in object_list %}
+                <div class="card mb-5" style="width: 100%;">
+                    {% if post.image != None %}
+                        <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title" style="text-align: center;">{{ post.title.title }}</h4>
+                        <h5>Ingredients</h5>
+                        <div class="clearfix">
+                            <ul style="">
+                                {% for ing in post.ingredients.all %}
+                                    <li style="float: left; margin-right: 25px;"> {{ ing.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <br>
+                        <p class="card-text">{{ post.body.capitalize|slice:":250"| safe }}...</p>
+                        <a href="{% url 'article-detail' post.pk %}" class="btn btn-secondary">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small>
+                            {{ post.create_date }} -
+                            {% if post.likes.count == 0 %}
+                                No Like
+                            {% else %}
+                                {{ post.likes.count }} Likes -
+                            {% endif %}
+                            By {{ post.author.first_name }} {{ post.author.last_name }}
+                        </small>
+                        {% if user.is_authenticated %}
+                            {% if user.id == post.author.id %}
+                                <a href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                                <a href="{% url 'delete-post' post.pk %}"><small style="color: #ff0000">(Delete)</small></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col">
+                    <div class="card p-3" style="border-radius: 40px;">
+                        <div class="card-body py-3">
+                            <h5 class="card-title ">Search</h5>
+                            <form action="{% url 'search-post' %}" method="Get">
+                                <div class="form-row">
+                                    <div class="col-8">
+                                        <label>
+                                            <input type="text" class="form-control" placeholder="You are looking for .."
+                                                   name="search_text">
+                                        </label>
+                                    </div>
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-secondary" id="button-go" name="button-go">
+                                            GO
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 30px;">
+                <div class="col">
+                    <div class="card" style="border-radius: 40px;">
+                        <div class="card-body pl-5">
+                            <h5 class="card-title"> Top Used Ingredients</h5>
+                            <div class="card-text">
+                                <ul>
+                                    {% for ing in ingredients %}
+                                        <li>
+                                            {{ ing.name }}({{ ing.blog_post.count }})
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination my-5 mx-auto" style="width: 60%;">
+    <span class="step-links" style="position: relative">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}"
+               style="width: 7rem;">previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}" style="width: 7rem;">next</a>
+        {% endif %}
+        <p class="text-center"
+           style="position: absolute; top: 5rem; padding-bottom: 5rem;"> Total {{ object_list.count }} Recipes</p>
+    </span>
+        </div>
+    </div>
+{% endblock %}
+

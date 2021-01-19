@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Recipes</h1>
+    <hr><br>
+    <div class="row">
+        <div class="col-sm-8">
+            {% for post in posts_title %}
+                <div class="card mb-5" style="width: 100%;">
+                    {% if post.image != None %}
+                        <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title.title }}</h5>
+                        <p class="card-text">{{ post.body.capitalize|slice:":250"| safe }}...</p>
+                        <a href="{% url 'article-detail' post.pk %}" class="btn btn-secondary">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small>
+                            {{ post.create_date }} -
+                            {% if post.likes.count == 0 %}
+                                No Like
+                            {% else %}
+                                {{ post.likes.count }} Likes -
+                            {% endif %}
+                            By {{ post.author.first_name }} {{ post.author.last_name }}
+                        </small>
+                        {% if user.is_authenticated %}
+                            {% if user.id == post.author.id %}
+                                <a href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                                <a href="{% url 'delete-post' post.pk %}"><small style="color: #ff0000">(Delete)</small></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% for post in posts_author %}
+                <div class="card mb-4" style="width: 100%;">
+                    {% if post.image != None %}
+                        <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title.title }}</h5>
+                        <p class="card-text">{{ post.body.capitalize|slice:":250"| safe }}...</p>
+                        <a href="{% url 'article-detail' post.pk %}" class="btn btn-secondary">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small>
+                            {{ post.create_date }} -
+                            {% if post.likes.count == 0 %}
+                                No Like
+                            {% else %}
+                                {{ post.likes.count }} Likes -
+                            {% endif %}
+                            By {{ post.author.first_name }} {{ post.author.last_name }}
+                        </small>
+                        {% if user.is_authenticated %}
+                            {% if user.id == post.author.id %}
+                                <a href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                                <a href="{% url 'delete-post' post.pk %}"><small style="color: #ff0000">(Delete)</small></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% for post in posts_title_tag %}
+                <div class="card mb-4" style="width: 100%;">
+                    {% if post.image != None %}
+                        <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title.title }}</h5>
+                        <p class="card-text">{{ post.body.capitalize|slice:":250"| safe }}...</p>
+                        <a href="{% url 'article-detail' post.pk %}" class="btn btn-secondary">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small>
+                            {{ post.create_date }} -
+                            {% if post.likes.count == 0 %}
+                                No Like
+                            {% else %}
+                                {{ post.likes.count }} Likes -
+                            {% endif %}
+                            By {{ post.author.first_name }} {{ post.author.last_name }}
+                        </small>
+                        {% if user.is_authenticated %}
+                            {% if user.id == post.author.id %}
+                                <a href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                                <a href="{% url 'delete-post' post.pk %}"><small style="color: #ff0000">(Delete)</small></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% for post in posts_body %}
+                <div class="card mb-4" style="width: 100%;">
+                    {% if post.image != None %}
+                        <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.image.url }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title.title }}</h5>
+                        <p class="card-text">{{ post.body.capitalize|slice:":250"| safe }}...</p>
+                        <a href="{% url 'article-detail' post.pk %}" class="btn btn-secondary">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small>
+                            {{ post.create_date }} -
+                            {% if post.likes.count == 0 %}
+                                No Like
+                            {% else %}
+                                {{ post.likes.count }} Likes -
+                            {% endif %}
+                            By {{ post.author.first_name }} {{ post.author.last_name }}
+                        </small>
+                        {% if user.is_authenticated %}
+                            {% if user.id == post.author.id %}
+                                <a href="{% url 'update-post' post.pk %}"><small>(Edit)</small></a>
+                                <a href="{% url 'delete-post' post.pk %}"><small style="color: #ff0000">(Delete)</small></a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="pagination my-5 mx-auto" style="width: 60%;">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}"
+               style="width: 7rem;">previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}" style="width: 7rem;">next</a>
+        {% endif %}
+    </span>
+    </div>
+{% endblock %}
