@@ -2,8 +2,10 @@ from django import forms
 from .models import Post, Category, Ingredient
 
 # food_category_choices = [('dessert',), ('pasta'), ('pizza'), ('salad')] -> choices comes first from the attrs
-food_category_choices = Category.objects.all().values_list('name', 'name')  # query to get the names of category model
-ingredient_category_choices = Ingredient.objects.all().values_list('name', 'name') # query to get the names of ingredient model
+food_category_choices = Category.objects.all().values_list(
+    'name', 'name')  # query to get the names of category model
+ingredient_category_choices = Ingredient.objects.all().values_list(
+    'name', 'name')  # query to get the names of ingredient model
 
 foods = []
 for food in food_category_choices:
@@ -17,7 +19,8 @@ for ingredient in ingredients:
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('title', 'title_tag', 'author', 'category', 'body', 'image', 'ingredients')
+        fields = ('title', 'title_tag', 'author',
+                  'category', 'body', 'image', 'ingredients')
 
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
@@ -41,4 +44,3 @@ class UpdatePostForm(forms.ModelForm):
             'ingredients': forms.SelectMultiple(choices=ingredients, attrs={'class': 'form-control'}),
             'body': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'PostBody'})
         }
-

@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from .views import HomeView, ArticleDetailView, AddPostView, UpdatePostView, DeletePostView, AddCategoryView, \
-    category_view, like_view,search_view
+    category_view, like_view, search_view, post_list, post_detail
 
 
 urlpatterns = [
@@ -12,5 +13,7 @@ urlpatterns = [
     path('article/edit/<int:pk>', UpdatePostView.as_view(), name='update-post'),
     path('article/<int:pk>/remove', DeletePostView.as_view(), name='delete-post'),
     path('like/<int:pk>', like_view, name='like-post'),
-    path('search/', search_view, name="search-post")
+    path('search/', search_view, name="search-post"),
+    path('api-post/', post_list),
+    path('api-post-detail/<int:pk>/', post_detail)
 ]

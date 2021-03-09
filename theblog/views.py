@@ -1,9 +1,59 @@
+# Django idports
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+
+
+# theblog app imports
 from .models import Post, Category, Ingredient
 from .forms import PostForm, UpdatePostForm
-from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from .serializers import PostSerializer
+
+
+@csrf_exempt
+def post_list(request):
+    if request.method == 'GET':
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = PostSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+def post_detail(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+
+    except Post.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = PostSerializer(post, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errorrs, status=400)
+
+    elif request.method == 'DELETE':
+        post.delete()
+        return HttpResponse(status=204)
 
 
 def like_view(request, pk):
@@ -39,7 +89,8 @@ def search_view(request):
     if request.method == 'GET':
         search = request.GET.get('search_text')
         posts_title = Post.objects.filter(title__contains=search)
-        posts_author_username = Post.objects.filter(author__username__contains=search)
+        posts_author_username = Post.objects.filter(
+            author__username__contains=search)
         posts_title_tag = Post.objects.filter(title_tag__contains=search)
         posts_body = Post.objects.filter(body__contains=search)
         return render(request, 'search-view.html', context={'posts': posts_title, 'posts_author': posts_author_username,
@@ -52,7 +103,8 @@ class ArticleDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         category_menu = Category.objects.all()
-        context = super(ArticleDetailView, self).get_context_data(*args, **kwargs)
+        context = super(ArticleDetailView, self).get_context_data(
+            *args, **kwargs)
         context["category_menu"] = category_menu
         return context
 
