@@ -1,9 +1,34 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Category, Ingredient
-from .forms import PostForm, UpdatePostForm
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework.parsers import JSONParser
+
+from .models import Post, Category, Ingredient
+from .forms import PostForm, UpdatePostForm
+from .serializers import PostSerializer
+
+
+
+@csrf_exempt
+def post_serializer(request):
+    if request.method == 'GET':
+        posts = Post.objects.all()
+        serializers = PostSerializer(posts, many=True)
+        return JsonResponse(serializers.data, safe=False)
+
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        seralizer = PostSerializer(data=data)
+
+        if serializer.is_valid():
+            seralizer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(seralizer.error, status=400)
+
 
 
 def like_view(request, pk):
